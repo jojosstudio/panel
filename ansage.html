@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundboard</title>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <style>
+        /* Spotify Player Style */
+        #spotify-player {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            margin-top: 30px;
+            width: 80%;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #song-info p {
+            margin: 5px;
+            font-size: 1.1rem;
+        }
+
+        #spotify-controls button {
+            margin: 10px;
+            padding: 10px;
+            background-color: #1DB954;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #spotify-controls button:hover {
+            background-color: #1ed760;
+        }
+
+        /* Grunddesign */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Obere Bar */
+        #top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(240, 240, 240, 0.8);
+            color: #333;
+            padding: 5px 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #ccc;
+            z-index: 1000;
+        }
+
+        #logo-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        #logo {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        #dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 150px;
+            text-align: left;
+            padding: 10px;
+            z-index: 1001;
+        }
+
+        #dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 10px;
+            display: block;
+            border-radius: 3px;
+            margin: 2px 0;
+            transition: background-color 0.3s;
+        }
+
+        #dropdown-menu a:hover {
+            background-color: #575757;
+        }
+
+        /* Box für aktuell laufenden Sound */
+        #current-sound-box {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 70px;
+            width: 85%;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        /* Buttons */
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 90%;
+            margin-top: 20px;
+        }
+
+        .sound-button {
+            padding: 10px;
+            background-color: #0c4f00;
+            color: #fff;
+            border: 2px solid #0c4f00;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .sound-button:hover {
+            transform: scale(1.05);
+        }
+
+        .playing {
+            background-color: red !important;
+            animation: blink 1s infinite;
+        }
+
+        .announcement-playing {
+            background-color: rgb(255, 94, 0) !important;
+        }
+
+        /* Notfall-Button */
+        #emergency-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+
+        #emergency-button:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes blink {
+            50% {
+                background-color: #ff4d4d;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Obere Bar mit Logo und Dropdown-Menü -->
+    <div id="top-bar">
+        <div id="logo-container">
+            <img src="logo.png" alt="Logo" id="logo" onclick="toggleDropdownMenu()">
+            <div id="dropdown-menu">
+                <a href="menu.html">Menu</a>
+                <a href="index.html">Abmelden</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aktueller Sound Box -->
+    <div id="current-sound-box">
+        Es spielt im Moment
+        <div id="current-sound"> - </div>
+    </div>
+    
+
+    <!-- Buttons -->
+    <div class="button-container">
+        <button class="sound-button" data-name="Technischer Defekt" onclick="toggleSound('technikd.mp3', this)">Technischer Defekt(Räumen)</button>
+        <button class="sound-button" data-name="Technischer Defekt" onclick="toggleSound('test.mp3', this)">Technischer Defekt(offline)</button>
+        <button class="sound-button" data-name="Test" onclick="toggleSound('test.mp3', this)">Test</button>
+        <button class="sound-button" data-name="Laustärke" onclick="toggleSound('laustärke.mp3', this)">Lautstärke</button>
+        <button class="sound-button" data-name="Verlassen" onclick="toggleSound('verlassen.mp3', this)">Verlassen</button>
+        <button class="sound-button" data-name="Schulsong" onclick="toggleSound('schulsong.mp3', this)">Schulsong</button>
+        <button class="sound-button" data-name="1Live" onclick="toggleSound('1live.mp3', this)">1live</button>
+        <button class="sound-button" data-name="Spotify" onclick="toggleSound('spotify.mp3', this)">Spotify</button>
+        <button class="sound-button" data-name="Sound 7" onclick="toggleSound('sound7.mp3', this)">Sound 7</button>
+        <button class="sound-button" data-name="Sound 8" onclick="toggleSound('sound8.mp3', this)">Sound 8</button>
+        <button class="sound-button" data-name="Sound 9" onclick="toggleSound('sound9.mp3', this)">Sound 9</button>
+        <button class="sound-button" data-name="Sound 10" onclick="toggleSound('sound10.mp3', this)">Sound 10</button>
+    </div>
+
+    <!-- Notfall-Button -->
+    <button id="emergency-button" onclick="playEmergency()">Notfall</button>
+
+    <script>
+        let currentAudio = null;
+        let announcementPlaying = false;
+
+function toggleSound(soundFile, button) {
+    const announcement = new Audio('announce.mp3');
+    const soundName = button.getAttribute('data-name'); // Name des Sounds, um ihn anzuzeigen
+    const currentSoundElement = document.getElementById('current-sound');
+
+    // Wenn bereits ein Audio läuft, stoppe es und setze den Button zurück
+    if (currentAudio && !currentAudio.paused) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        const playingButton = document.querySelector('.playing');
+        if (playingButton) playingButton.classList.remove('playing');
+    }
+
+    // Wenn die Ankündigung nicht bereits abgespielt wird, spiele sie ab
+    if (!announcementPlaying) {
+        announcementPlaying = true;
+        button.classList.add('announcement-playing'); // Button blau färben, wenn Ankündigung läuft
+        announcement.play();
+
+        // Setze die Anzeige auf "Ankündigung läuft"
+        currentSoundElement.textContent = 'Ankündigung läuft';
+
+        // Wenn die Ankündigung zu Ende ist, spiele den Sound
+        announcement.onended = () => {
+            const sound = new Audio(soundFile);
+            sound.play();
+            currentAudio = sound; // Setze das aktuelle Audio
+
+            // Wenn der Sound zu Ende ist, setze die Anzeige zurück
+            sound.onended = () => {
+                button.classList.remove('playing');
+                currentSoundElement.textContent = ' - ';
+            };
+
+            button.classList.add('playing'); // Button rot färben, wenn Sound läuft
+            announcementPlaying = false; // Setze die Ankündigung zurück
+            button.classList.remove('announcement-playing'); // Entferne das Blau, wenn Ankündigung vorbei ist
+
+            // Setze die Anzeige auf den aktuellen Soundnamen
+            currentSoundElement.textContent = `Spielt: ${soundName}`;
+        };
+    } else {
+        // Wenn die Ankündigung bereits läuft, spiele den Sound sofort
+        const sound = new Audio(soundFile);
+        sound.play();
+        currentAudio = sound;
+
+        sound.onended = () => {
+            button.classList.remove('playing');
+            currentSoundElement.textContent = ' - ';
+        };
+        button.classList.add('playing'); // Button rot färben, wenn Sound läuft
+
+        // Setze die Anzeige auf den aktuellen Soundnamen
+        currentSoundElement.textContent = `Spielt: ${soundName}`;
+    }
+}
+
+    
+        let isEmergencyActive = false; // Zustand des Notfall-Sounds
+        let emergencySound; // Audio-Objekt für den Notfall-Sound
+    
+        function playEmergency() {
+            const emergencyButton = document.getElementById('emergency-button');
+    
+            if (!isEmergencyActive) {
+                // Aktiviere den Notfall-Modus
+                isEmergencyActive = true;
+                emergencySound = new Audio('test.mp3');
+                emergencySound.loop = true; // Endlosschleife aktivieren
+                emergencySound.play();
+    
+                // Visuelles Feedback für den Button
+                emergencyButton.style.transform = 'scale(1.1)';
+                emergencyButton.style.backgroundColor = '#ff4d4d';
+                emergencyButton.textContent = 'Notfall AUS'; // Text ändern
+    
+                // Anzeige aktualisieren
+                document.getElementById('current-sound').textContent = 'Notfall-Sound läuft';
+            } else {
+                // Deaktiviere den Notfall-Modus
+                isEmergencyActive = false;
+                if (emergencySound) {
+                    emergencySound.pause();
+                    emergencySound.currentTime = 0; // Zurücksetzen des Sounds
+                }
+    
+                // Visuelles Feedback zurücksetzen
+                emergencyButton.style.transform = 'scale(1)';
+                emergencyButton.style.backgroundColor = 'red';
+                emergencyButton.textContent = 'Notfall EIN'; // Text ändern
+    
+                // Anzeige aktualisieren
+                document.getElementById('current-sound').textContent = 'Nichts';
+            }
+        }
+    
+        // Dropdown-Menü anzeigen/verstecken
+        function toggleDropdownMenu() {
+            const menu = document.getElementById("dropdown-menu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</body>
+</html>
