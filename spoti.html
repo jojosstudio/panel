@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundboard mit Stream</title>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: white;
+        }
+
+        /* Top Bar */
+        #top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(33, 33, 33, 0.9);
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        #logo-container {
+            position: relative;
+        }
+
+        #logo {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        #dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            background-color: rgba(33, 33, 33, 0.95);
+            border: 1px solid #555;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 150px;
+            z-index: 1001;
+        }
+
+        #dropdown-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        #dropdown-menu a:hover {
+            background-color: #575757;
+        }
+
+        /* Buttons */
+        .button-container {
+            margin-top: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .sound-button {
+            margin: 10px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .sound-button:hover {
+            background: #575757;
+        }
+
+        .sound-button.active {
+            background: #ff0000;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div id="top-bar">
+        <div id="logo-container">
+            <img src="logo.png" alt="Logo" id="logo">
+            <div id="dropdown-menu">
+                <a href="#" id="info-menu">Info</a>
+                <a href="menu.html" id="home-menu">Home</a>
+                <a href="index.html" id="logout-menu">Abmelden</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-container">
+        <button class="sound-button" data-sound="anounce.mp3">Anounce</button>
+        <button class="sound-button" data-stream="https://www1.wdr.de/radio/player/radioplayer106~_layout-popupVersion.html">
+            1Live Stream
+        </button>
+        <button class="sound-button" data-sound="test.mp3">Test</button>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="audio-player"></audio>
+
+    <script>
+        const logo = document.getElementById('logo');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const soundButtons = document.querySelectorAll('.sound-button');
+        const audioPlayer = document.getElementById('audio-player');
+
+        // Dropdown-Menü
+        logo.addEventListener('mouseenter', () => {
+            dropdownMenu.style.display = 'block';
+        });
+
+        logo.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!dropdownMenu.matches(':hover')) {
+                    dropdownMenu.style.display = 'none';
+                }
+            }, 100);
+        });
+
+        dropdownMenu.addEventListener('mouseenter', () => {
+            dropdownMenu.style.display = 'block';
+        });
+
+        dropdownMenu.addEventListener('mouseleave', () => {
+            dropdownMenu.style.display = 'none';
+        });
+
+        // Buttons
+        soundButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const sound = button.dataset.sound;
+                const stream = button.dataset.stream;
+
+                // Stop current audio
+                if (!button.classList.contains('active')) {
+                    stopAllSounds();
+                    button.classList.add('active');
+                    if (sound) {
+                        playSound(sound);
+                    } else if (stream) {
+                        playStream(stream);
+                    }
+                } else {
+                    stopAllSounds();
+                }
+            });
+        });
+
+        // Funktionen zum Abspielen und Stoppen
+        function playSound(file) {
+            audioPlayer.src = file;
+            audioPlayer.play();
+        }
+
+        function playStream(url) {
+            audioPlayer.src = url;
+            audioPlayer.play();
+        }
+
+        function stopAllSounds() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            soundButtons.forEach(button => button.classList.remove('active'));
+        }
+    </script>
+</body>
+</html>
