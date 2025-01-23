@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menü</title>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+
+    #menu-screen {
+        position: absolute;
+        width: 80%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Breitere Kästen */
+        gap: 30px; /* Mehr Abstand zwischen den Kästen */
+        padding: 20px;
+        justify-content: center;
+        text-align: center;
+        transform: scale(0);
+        opacity: 0;
+        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    }
+
+    #menu-screen.active {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .menu-item {
+        background-color: rgba(169, 169, 169, 0.7);
+        border-radius: 15px;
+        padding: 50px; /* Größerer Innenabstand */
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); /* Stärkere Schatten */
+        transition: transform 0.3s ease, background-color 0.3s;
+        cursor: pointer;
+        font-size: 1.5rem; /* Größere Schrift */
+    }
+
+    .menu-item:hover {
+        transform: translateY(-10px); /* Stärkeres Schweben */
+        background-color: rgba(169, 169, 169, 0.9);
+    }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: black;
+        }
+
+        #menu-screen .menu-item p {
+            font-size: 1.2rem;
+            color: black;
+        }
+
+        #menu-screen .menu-item i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+
+        /* Dünne Abmelde-Leiste im Mac-Stil */
+        #top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(74, 74, 74, 0.8); 
+            color: #333;
+            padding: 2px 10px; /* Dünner als vorher */
+            font-size: 1rem;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(74, 74, 74, 0.1);
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* Logo und Dropdown */
+        #logo-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        #logo {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        #dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 150px;
+            text-align: left;
+            padding: 10px;
+        }
+
+        #dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 10px;
+            display: block;
+            border-radius: 3px;
+            margin: 2px 0;
+            transition: background-color 0.3s;
+        }
+
+        #dropdown-menu a:hover {
+            background-color: #575757;
+        }
+
+        /* Info-Fenster im Vordergrund */
+        #info-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: black;
+            padding: 20px;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            text-align: center;
+            z-index: 999;
+        }
+
+        #info-window.active {
+            display: block;
+        }
+
+        #info-window h2 {
+            margin-bottom: 10px;
+        }
+
+        #info-window p {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar mit Logo und Dropdown-Menü -->
+    <div id="top-bar">
+        <div id="logo-container">
+            <img src="logo.png" alt="Logo" id="logo">
+            <div id="dropdown-menu">
+                <a href="#" id="info-menu">Info</a>
+                <a href="#" id="logout-menu">Abmelden</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info-Fenster -->
+    <div id="info-window">
+        <h2>Info</h2>
+        <p><strong>Ersteller:</strong> Julien Sperling</p>
+        <p><strong>Projekt:</strong> Aula-Ansagen</p>
+        <p><strong>Version:</strong> 1.0</p>
+        <button onclick="closeInfoWindow()">Schließen</button>
+    </div>
+
+    <!-- Menü-Bereich -->
+    <div id="menu-screen">
+        <div class="menu-item" id="aula-ansagen">
+            <i class="fas fa-bullhorn"></i>
+            <p>Aula-Ansagen</p>
+        </div>
+        <div class="menu-item" id="termin">
+            <i class="fas fa-calendar-alt"></i>
+            <p>Inventur</p>
+        </div>
+        <div class="menu-item" id="co">
+            <i class="fas fa-cogs"></i>
+            <p>Co</p>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script>
+        const menuScreen = document.getElementById('menu-screen');
+        const infoWindow = document.getElementById('info-window');
+        const logoutButton = document.getElementById('logout-menu');
+        const infoButton = document.getElementById('info-menu');
+        const logo = document.getElementById('logo');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const logoContainer = document.getElementById('logo-container');
+
+        // Menü anzeigen nach 1 Sekunde
+        setTimeout(() => {
+            menuScreen.classList.add('active');
+        }, 1000);
+
+        // Klick-Listener für die Menü-Optionen
+        document.getElementById('aula-ansagen').addEventListener('click', () => {
+            window.location.href = "ansage.html";
+        });
+
+        document.getElementById('termin').addEventListener('click', () => {
+            window.location.href = "exel.html";
+        });
+
+        document.getElementById('co').addEventListener('click', () => {
+            window.location.href = "co.html";
+        });
+
+        // Info-Schaltfläche klicken
+        infoButton.addEventListener('click', () => {
+            infoWindow.classList.add('active');
+        });
+
+        // Abmelden-Schaltfläche klicken
+        logoutButton.addEventListener('click', () => {
+            window.location.href = "index.html";  // Stelle sicher, dass der Link zur richtigen Index-Seite führt
+        });
+
+        // Info-Fenster schließen
+        function closeInfoWindow() {
+            infoWindow.classList.remove('active');
+        }
+
+        // Dropdown-Menü anzeigen, wenn Maus über dem gesamten Container ist
+        logoContainer.addEventListener('mouseenter', () => {
+            dropdownMenu.style.display = 'block';
+        });
+
+        logoContainer.addEventListener('mouseleave', () => {
+            // Überprüfen, ob die Maus sich nicht mehr auf dem Dropdown befindet
+            setTimeout(() => {
+                if (!dropdownMenu.matches(':hover')) {
+                    dropdownMenu.style.display = 'none';
+                }
+            }, 100);
+        });
+
+        // Dropdown-Menü bleibt sichtbar, wenn die Maus auf dem Dropdown-Menü ist
+        dropdownMenu.addEventListener('mouseenter', () => {
+            dropdownMenu.style.display = 'block';
+        });
+
+        dropdownMenu.addEventListener('mouseleave', () => {
+            dropdownMenu.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
